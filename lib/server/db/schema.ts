@@ -40,7 +40,7 @@ const baseTenantFields = {
 
 export const connections = pgTable("connections", {
   ...baseTenantFields,
-  ragieConnectionId: text("ragie_connection_id").notNull().unique(),
+  sourceId: text("source_id").notNull().unique(),
   name: text().notNull(),
   status: text().notNull(),
   sourceType: text().notNull(),
@@ -95,8 +95,8 @@ export const tenants = pgTable(
     overridePrioritizeRecent: boolean("override_prioritize_recent").default(true),
     overrideAgenticLevel: boolean("override_agentic_level").default(true),
     agenticLevel: agenticLevelEnum("agentic_level").default("medium"),
-    ragieApiKey: text("ragie_api_key"),
-    ragiePartition: text("ragie_partition"),
+    backendApiKey: text("backend_api_key"),
+    backendPartition: text("backend_partition"),
     slackEnabled: boolean("slack_enabled").default(false),
     slackChannels: text("slack_channels").array().default([]),
     slackBotToken: text("slack_bot_token"),

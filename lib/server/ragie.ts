@@ -28,8 +28,8 @@ export async function getTenantRagieClient(apiKey: string) {
 export async function getRagieSettingsByTenantId(tenantId: string) {
   const [tenant] = await db
     .select({
-      ragieApiKey: tenants.ragieApiKey,
-      ragiePartition: tenants.ragiePartition,
+      backendApiKey: tenants.backendApiKey,
+      backendPartition: tenants.backendPartition,
     })
     .from(tenants)
     .where(eq(tenants.id, tenantId));
@@ -42,13 +42,13 @@ export async function getRagieSettingsByTenantId(tenantId: string) {
 }
 
 export async function getRagieClientAndPartition(tenantId: string) {
-  const { ragieApiKey, ragiePartition } = await getRagieSettingsByTenantId(tenantId);
+  const { backendApiKey, backendPartition } = await getRagieSettingsByTenantId(tenantId);
 
   let client;
   let partition;
-  if (ragieApiKey) {
-    client = await getTenantRagieClient(ragieApiKey);
-    partition = ragiePartition || "default";
+  if (backendApiKey) {
+    client = await getTenantRagieClient(backendApiKey);
+    partition = backendPartition || "default";
   } else {
     client = getRagieClient();
     partition = tenantId;
@@ -61,13 +61,13 @@ export async function getRagieClientAndPartition(tenantId: string) {
 
 // we should use the client from the function above^ this is only for certain features not in the SDK (agentic, streaming)
 export async function getRagieApiKeyAndPartition(tenantId: string) {
-  const { ragieApiKey, ragiePartition } = await getRagieSettingsByTenantId(tenantId);
+  const { backendApiKey, backendPartition } = await getRagieSettingsByTenantId(tenantId);
 
   let apiKey;
   let partition;
-  if (ragieApiKey) {
-    apiKey = decrypt(ragieApiKey);
-    partition = ragiePartition || "default";
+  if (backendApiKey) {
+    apiKey = decrypt(backendApiKey);
+    partition = backendPartition || "default";
   } else {
     apiKey = settings.RAGIE_API_KEY;
     partition = tenantId;

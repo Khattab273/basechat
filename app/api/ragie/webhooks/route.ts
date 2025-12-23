@@ -22,7 +22,7 @@ async function handleConnectionSyncEvent(event: WebhookEvent) {
   const rs = await db
     .select()
     .from(schema.connections)
-    .where(eq(schema.connections.ragieConnectionId, event.payload.connection_id));
+    .where(eq(schema.connections.sourceId, event.payload.connection_id));
 
   // Not one we know about. We return a successful status because otherwise it is considered a failure
   // and webhooks stop being called upon enough failures.

@@ -73,8 +73,8 @@ if (isNaN(newLimit)) {
 const tenantsSchema = pgTable("tenants", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull(),
-  ragieApiKey: text("ragie_api_key"),
-  ragiePartition: text("ragie_partition"),
+  backendApiKey: text("backend_api_key"),
+  backendPartition: text("backend_partition"),
   partitionLimitExceededAt: timestamp("partition_limit_exceeded_at", { withTimezone: true, mode: "date" }),
 });
 
@@ -86,8 +86,8 @@ async function updatePartitionLimit(slug, newLimit) {
     const [tenant] = await db
       .select({
         id: tenantsSchema.id,
-        ragieApiKey: tenantsSchema.ragieApiKey,
-        ragiePartition: tenantsSchema.ragiePartition,
+        backendApiKey: tenantsSchema.backendApiKey,
+        backendPartition: tenantsSchema.backendPartition,
       })
       .from(tenantsSchema)
       .where(eq(tenantsSchema.slug, slug));
@@ -99,13 +99,13 @@ async function updatePartitionLimit(slug, newLimit) {
     // Get the Ragie client
     let client;
     let partition;
-    if (tenant.ragieApiKey) {
-      const decryptedApiKey = decrypt(tenant.ragieApiKey);
+    if (tenant.backendApiKey) {
+      const decryptedApiKey = decrypt(tenant.backendApiKey);
       client = new Ragie({
         auth: decryptedApiKey,
         serverURL: RAGIE_API_BASE_URL,
       });
-      partition = tenant.ragiePartition || "default";
+      partition = tenant.backendPartition || "default";
     } else {
       client = new Ragie({
         auth: RAGIE_API_KEY,
