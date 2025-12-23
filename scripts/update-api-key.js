@@ -37,8 +37,8 @@ const partition = process.argv[4];
 const tenantsSchema = pgTable("tenants", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull(),
-  ragieApiKey: text("ragie_api_key"),
-  ragiePartition: text("ragie_partition"),
+  backendApiKey: text("backend_api_key"),
+  backendPartition: text("backend_partition"),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
     .defaultNow()
     .notNull()
@@ -56,8 +56,8 @@ async function updateRagieApiKey(slug, apiKey, partition) {
     const result = await db
       .update(tenantsSchema)
       .set({
-        ragieApiKey: encryptedApiKey,
-        ragiePartition: partition || null,
+        backendApiKey: encryptedApiKey,
+        backendPartition: partition || null,
       })
       .where(eq(tenantsSchema.slug, slug));
 

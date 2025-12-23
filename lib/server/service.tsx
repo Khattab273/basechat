@@ -124,7 +124,7 @@ export async function deleteConnection(tenantId: string, id: string) {
     try {
       const { client } = await getRagieClientAndPartition(tenantId);
       await client.connections.delete({
-        connectionId: connection.ragieConnectionId,
+        connectionId: connection.sourceId,
         deleteConnectionPayload: { keepFiles: false },
       });
     } catch (e: any) {
@@ -134,11 +134,11 @@ export async function deleteConnection(tenantId: string, id: string) {
   });
 }
 
-export async function saveConnection(tenantId: string, ragieConnectionId: string, status: string, addedBy?: string) {
+export async function saveConnection(tenantId: string, sourceId: string, status: string, addedBy?: string) {
   const qs = await db
     .select()
     .from(schema.connections)
-    .where(and(eq(schema.connections.tenantId, tenantId), eq(schema.connections.ragieConnectionId, ragieConnectionId)))
+    .where(and(eq(schema.connections.tenantId, tenantId), eq(schema.connections.sourceId, sourceId)))
     .for("update");
   const connection = qs.length === 1 ? qs[0] : null;
 
@@ -146,10 +146,10 @@ export async function saveConnection(tenantId: string, ragieConnectionId: string
 
   if (!connection) {
     const { client } = await getRagieClientAndPartition(tenantId);
-    const ragieConnection = await client.connections.get({ connectionId: ragieConnectionId });
+    const ragieConnection = await client.connections.get({ connectionId: sourceId });
     await db.insert(schema.connections).values({
       tenantId: tenantId,
-      ragieConnectionId,
+      sourceId,
       name: ragieConnection.name,
       status,
       sourceType: ragieConnection.type,
@@ -161,7 +161,7 @@ export async function saveConnection(tenantId: string, ragieConnectionId: string
       .update(schema.connections)
       .set({ status, lastSyncedAt })
       .where(
-        and(eq(schema.connections.tenantId, tenantId), eq(schema.connections.ragieConnectionId, ragieConnectionId)),
+        and(eq(schema.connections.tenantId, tenantId), eq(schema.connections.sourceId, sourceId)),
       );
   }
 }

@@ -39,8 +39,8 @@ if (isNaN(newLimit)) {
 const tenantsSchema = pgTable("tenants", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull(),
-  ragieApiKey: text("ragie_api_key"),
-  ragiePartition: text("ragie_partition"),
+  backendApiKey: text("backend_api_key"),
+  backendPartition: text("backend_partition"),
   partitionLimitExceededAt: timestamp("partition_limit_exceeded_at", { withTimezone: true, mode: "date" }),
 });
 
@@ -54,8 +54,8 @@ async function updateAllPartitionLimits(newLimit, excludedTenantIds) {
       .select({
         id: tenantsSchema.id,
         slug: tenantsSchema.slug,
-        ragieApiKey: tenantsSchema.ragieApiKey,
-        ragiePartition: tenantsSchema.ragiePartition,
+        backendApiKey: tenantsSchema.backendApiKey,
+        backendPartition: tenantsSchema.backendPartition,
       })
       .from(tenantsSchema);
 
@@ -76,7 +76,7 @@ async function updateAllPartitionLimits(newLimit, excludedTenantIds) {
         console.log(`Processing tenant: ${tenant.slug}`);
 
         // tenant custom api key
-        if (tenant.ragieApiKey) {
+        if (tenant.backendApiKey) {
           console.log(`Tenant ${tenant.slug} has custom api key, skipping`);
           continue;
         } else {

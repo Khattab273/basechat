@@ -12,7 +12,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { client } = await getRagieClientAndPartition(tenant.id);
 
     await client.connections.sync({
-      connectionId: connection.ragieConnectionId,
+      connectionId: connection.sourceId,
     });
 
     return Response.json({ success: true });
